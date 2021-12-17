@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,7 +50,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
     private String onlineUserId = "";
     private DatabaseReference expensesRef,personalRef;
 
-    private TextView totalBudgetAmountTextView, analyticsTransportAmount,analyticsFoodAmount,analyticsHouseExpensesAmount,analyticsEntertainmentAmount;
+    private TextView totalBudgetTextView,totalSpendingTextView, analyticsTransportAmount,analyticsFoodAmount,analyticsHouseExpensesAmount,analyticsEntertainmentAmount;
     private TextView analyticsEducationAmount,analyticsCharityAmount,analyticsApparelAmount,analyticsHealthAmount,analyticsPersonalExpensesAmount,analyticsOtherAmount, monthSpentAmount;
 
     private RelativeLayout linearLayoutFood,linearLayoutTransport,linearLayoutHouse,linearLayoutEntertainment,linearLayoutEducation;
@@ -64,6 +66,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
     private DateTime specificDateSelected;
 
     private DatabaseReference budgetRef;
+    Pie pie;
 
     DecimalFormat df = new DecimalFormat("#.#");
     @Override
@@ -84,7 +87,8 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
         budgetRef = FirebaseDatabase.getInstance().getReference().child("budget").child(onlineUserId);
 
 
-        totalBudgetAmountTextView = findViewById(R.id.totalBudgetAmountTextView);
+        totalBudgetTextView = findViewById(R.id.totalBudgetTextView);
+        totalSpendingTextView = findViewById(R.id.totalSpendingTextView);
 
         //general analytic
         monthSpentAmount = findViewById(R.id.monthSpentAmount);
@@ -140,8 +144,11 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
         status_Image_oth = findViewById(R.id.otherStatus);
         scrollView = findViewById(R.id.scrollView);
 
+
         //anyChartView
+        pie = AnyChart.pie();
         anyChartView = findViewById(R.id.anyChartView);
+        anyChartView.setChart(pie);
 
         btnSelectMonth = findViewById(R.id.btnSearchMonth);
 
@@ -174,6 +181,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         TextView tvPeriode = findViewById(R.id.tvPeriode);
 
                         tvPeriode.setText("Periode: " + mSelected + "/" + ySelected);
+                        getBudgetAmount();
                         getTotalMonthsTransportExpense();
                         getTotalMonthsFoodExpense();
                         getTotalMonthsHouseExpense();
@@ -197,10 +205,12 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         getMonthPerBudgetRatios();
                         getMonthOtherBudgetRatios();
 
+
                         new java.util.Timer().schedule(
                                 new java.util.TimerTask() {
                                     @Override
                                     public void run() {
+                                        Log.d("Timer","10S");
                                         loadGraph();
                                         setStatusAndImageResource();
                                     }
@@ -214,6 +224,71 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
         });
 
     }
+
+    private void getBudgetAmount() {
+
+        MutableDateTime epoch = new MutableDateTime();
+        epoch.setDate(0); //Set to Epoch time
+        Months months = Months.monthsBetween(epoch, specificDateSelected);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("budget").child(onlineUserId);
+        Query query = reference.orderByChild("month").equalTo(months.getMonths());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) {
+                    int totalAmount = 0;
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Map<String, Object> map = (Map<String, Object>) ds.getValue();
+                        Object total = map.get("amount");
+                        int pTotal = Integer.parseInt(String.valueOf(total));
+                        totalAmount += pTotal;
+
+                    }
+                    personalRef.child("budget").setValue(totalAmount);
+                    Log.d("totalBudget", String.valueOf(totalAmount));
+
+                    totalBudgetTextView.setText("Months's Budget: $ "+ totalAmount);
+                    anyChartView.setVisibility(View.VISIBLE);
+                } else{
+                    totalBudgetTextView.setText("Months's Budget: $ "+ 0);
+                    anyChartView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+//        budgetRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists() && snapshot.getChildrenCount()>0){
+//                    for (DataSnapshot ds :  snapshot.getChildren()){
+//                        Map<String, Object> map = (Map<String, Object>)ds.getValue();
+//                        Object total = map.get("amount");
+//                        int pTotal = Integer.parseInt(String.valueOf(total));
+//                        totalAmountBudget+=pTotal;
+//                        budgetTv.setText("$ "+String.valueOf(totalAmountBudget));
+//                    }
+//                }else {
+//                    totalAmountBudget=0;
+//                    budgetTv.setText("$ "+String.valueOf(0));
+//                    finalBudget = totalAmountBudget;
+//                }
+//                personalRef.child("budget").setValue(totalAmountBudget);
+//                Log.d("totalAmountBudget",String.valueOf(totalAmountBudget));
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+    }
+
     private void getTotalMonthsTransportExpense() {
         MutableDateTime epoch = new MutableDateTime();
         epoch.setDate(0); //Set to Epoch time
@@ -235,6 +310,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         totalAmount += pTotal;
                         analyticsTransportAmount.setText("Spent: $" + totalAmount);
                     }
+                    linearLayoutTransport.setVisibility(View.VISIBLE);
                     personalRef.child("monthTrans").setValue(totalAmount);
 
 
@@ -276,6 +352,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsFoodAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthFood").setValue(totalAmount);
+                    linearLayoutFood.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutFood.setVisibility(View.GONE);
                     personalRef.child("monthFood").setValue(0);
@@ -311,6 +388,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsHouseExpensesAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthHouse").setValue(totalAmount);
+                    linearLayoutHouse.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutHouse.setVisibility(View.GONE);
                     personalRef.child("monthHouse").setValue(0);
@@ -346,6 +424,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsEntertainmentAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthEnt").setValue(totalAmount);
+                    linearLayoutEntertainment.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutEntertainment.setVisibility(View.GONE);
                     personalRef.child("monthEnt").setValue(0);
@@ -381,6 +460,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsEducationAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthEdu").setValue(totalAmount);
+                    linearLayoutEducation.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutEducation.setVisibility(View.GONE);
                     personalRef.child("monthEdu").setValue(0);
@@ -416,6 +496,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsCharityAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthChar").setValue(totalAmount);
+                    linearLayoutCharity.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutCharity.setVisibility(View.GONE);
                     personalRef.child("monthChar").setValue(0);
@@ -451,6 +532,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsApparelAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthApp").setValue(totalAmount);
+                    linearLayoutApparel.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutApparel.setVisibility(View.GONE);
                     personalRef.child("monthApp").setValue(0);
@@ -486,6 +568,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsHealthAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthHea").setValue(totalAmount);
+                    linearLayoutHealth.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutHealth.setVisibility(View.GONE);
                     personalRef.child("monthHea").setValue(0);
@@ -521,6 +604,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsPersonalExpensesAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthPer").setValue(totalAmount);
+                    linearLayoutPersonalExp.setVisibility(View.VISIBLE);
                 }else {
                     linearLayoutPersonalExp.setVisibility(View.GONE);
                     personalRef.child("monthPer").setValue(0);
@@ -556,6 +640,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         analyticsOtherAmount.setText("Spent: $" + totalAmount);
                     }
                     personalRef.child("monthOther").setValue(totalAmount);
+                    linearLayoutOther.setVisibility(View.VISIBLE);
                 }else {
                     personalRef.child("monthOther").setValue(0);
                     linearLayoutOther.setVisibility(View.GONE);
@@ -592,10 +677,11 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                     }
 
                     rvSummary.setVisibility(View.VISIBLE);
-                    totalBudgetAmountTextView.setText("Total Months's spending: $ "+ totalAmount);
+                    totalSpendingTextView.setText("Months's spending: $ "+ totalAmount);
                     monthSpentAmount.setText("Total Spent: $ "+totalAmount);
+                    anyChartView.setVisibility(View.VISIBLE);
                 }else {
-                    totalBudgetAmountTextView.setText("Total Months's spending: $ "+ 0);
+                    totalSpendingTextView.setText("Months's spending: $ "+ 0);
                     anyChartView.setVisibility(View.GONE);
                     rvSummary.setVisibility(View.GONE);
                 }
@@ -1094,7 +1180,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                         othTotal = 0;
                     }
 
-                    Pie pie = AnyChart.pie();
+
                     List<DataEntry> data = new ArrayList<>();
                     data.add(new ValueDataEntry("Transport", traTotal));
                     data.add(new ValueDataEntry("House exp", houseTotal));
@@ -1106,6 +1192,13 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                     data.add(new ValueDataEntry("Health", heaTotal));
                     data.add(new ValueDataEntry("Personal", perTotal));
                     data.add(new ValueDataEntry("other", othTotal));
+                    Log.d("tratotal", String.valueOf(traTotal));
+                    Log.d("houseTotal", String.valueOf(houseTotal));
+                    Log.d("chaTotal", String.valueOf(chaTotal));
+                    Log.d("appTotal", String.valueOf(appTotal));
+                    Log.d("heaTotal", String.valueOf(heaTotal));
+                    Log.d("perTotal", String.valueOf(perTotal));
+                    Log.d("othTotal", String.valueOf(othTotal));
 
 
                     pie.data(data);
@@ -1124,7 +1217,7 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                             .itemsLayout(LegendLayout.HORIZONTAL)
                             .align(Align.CENTER);
 
-                    anyChartView.setChart(pie);
+
                 }
                 else {
                     Toast.makeText(MonthlyAnalyticsActivity.this,"Child does not exist", Toast.LENGTH_SHORT).show();

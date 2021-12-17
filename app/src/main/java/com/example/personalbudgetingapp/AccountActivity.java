@@ -77,6 +77,7 @@ public class AccountActivity extends AppCompatActivity {
         userEmail = findViewById(R.id.userEmail);
         userEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
+        logoutBtn = findViewById(R.id.logoutBtn);
 
         tvAddress = findViewById(R.id.tvAddress);
         Toolbar settingToolbar = findViewById(R.id.my_Feed_Toolbar);
@@ -179,6 +180,27 @@ public class AccountActivity extends AppCompatActivity {
                 });
                 alertDialog.show();
 
+            }
+        });
+
+        logoutBtn = findViewById(R.id.logoutBtn);
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(AccountActivity.this)
+                        .setTitle("Personal Budgeting App")
+                        .setMessage("Are you sure you want to exit?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                FirebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(AccountActivity.this, LoginActivity.class);
+                                startActivity( intent);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
             }
         });
 

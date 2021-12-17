@@ -164,31 +164,62 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getBudgetAmount() {
-        budgetRef.addValueEventListener(new ValueEventListener() {
+
+        MutableDateTime epoch = new MutableDateTime();
+        epoch.setDate(0); //Set to Epoch time
+        DateTime now = new DateTime();
+        Months months = Months.monthsBetween(epoch, now);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("budget").child(onlineUserID);
+        Query query = reference.orderByChild("month").equalTo(months.getMonths());
+        query.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists() && snapshot.getChildrenCount()>0){
-                    for (DataSnapshot ds :  snapshot.getChildren()){
-                        Map<String, Object> map = (Map<String, Object>)ds.getValue();
-                        Object total = map.get("amount");
-                        int pTotal = Integer.parseInt(String.valueOf(total));
-                        totalAmountBudget+=pTotal;
-                        budgetTv.setText("$ "+String.valueOf(totalAmountBudget));
-                    }
-                }else {
-                    totalAmountBudget=0;
-                    budgetTv.setText("$ "+String.valueOf(0));
-                    finalBudget = totalAmountBudget;
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int totalAmount = 0;
+                for (DataSnapshot ds :  dataSnapshot.getChildren()){
+                    Map<String, Object> map = (Map<String, Object>)ds.getValue();
+                    Object total = map.get("amount");
+                    int pTotal = Integer.parseInt(String.valueOf(total));
+                    totalAmount+=pTotal;
+                    budgetTv.setText("$ "+String.valueOf(totalAmount));
+
                 }
-                personalRef.child("budget").setValue(totalAmountBudget);
-                Log.d("totalAmountBudget",String.valueOf(totalAmountBudget));
+                personalRef.child("budget").setValue(totalAmount);
+                totalAmountBudget = totalAmount;
+                Log.d("totalBudget",String.valueOf(totalAmountBudget));
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+
+//        budgetRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.exists() && snapshot.getChildrenCount()>0){
+//                    for (DataSnapshot ds :  snapshot.getChildren()){
+//                        Map<String, Object> map = (Map<String, Object>)ds.getValue();
+//                        Object total = map.get("amount");
+//                        int pTotal = Integer.parseInt(String.valueOf(total));
+//                        totalAmountBudget+=pTotal;
+//                        budgetTv.setText("$ "+String.valueOf(totalAmountBudget));
+//                    }
+//                }else {
+//                    totalAmountBudget=0;
+//                    budgetTv.setText("$ "+String.valueOf(0));
+//                    finalBudget = totalAmountBudget;
+//                }
+//                personalRef.child("budget").setValue(totalAmountBudget);
+//                Log.d("totalAmountBudget",String.valueOf(totalAmountBudget));
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
     }
 
     private void getMonthSpentAmount() {

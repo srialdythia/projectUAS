@@ -34,16 +34,33 @@
             android:layout_height="wrap_content"
             android:text="Periode: "/>
 
-        <TextView
-            android:id="@+id/totalBudgetAmountTextView"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Total Spending: 00.00"
-            android:textColor="#000"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textAlignment="center"
-            android:layout_marginTop="5dp"/>
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/totalSpendingTextView"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"
+                android:text="Spending: 00.00"
+                android:textColor="#000"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:layout_marginTop="5dp"/>
+            <TextView
+                android:id="@+id/totalBudgetTextView"
+                android:layout_weight="0.5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Budget: 00.00"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:textAlignment="center"
+                android:textColor="#000"/>
+        </LinearLayout>
+
 
 
         <LinearLayout
