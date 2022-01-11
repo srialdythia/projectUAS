@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000"
+        android:background="@color/toolbar"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -31,16 +31,27 @@
         android:layout_height="wrap_content"
         android:text="Periode "/>
 
-    <TextView
-        android:id="@+id/totalBudgetAmountTv"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Total Budget Amount: $0"
-        android:textSize="25sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:textColor="#000"
-        android:layout_marginTop="5dp"/>
+        android:orientation="horizontal"
+        android:layout_gravity="center">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Budget Amount: "
+            android:textSize="20sp"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:id="@+id/totalBudgetAmountTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="0"/>
+    </LinearLayout>
+
     
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"

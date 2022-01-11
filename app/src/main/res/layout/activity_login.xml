@@ -9,11 +9,32 @@
     android:layout_margin="20dp"
     tools:context=".LoginActivity">
 
-    <ImageView
+    <LinearLayout
         android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/applogo" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp">
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/money1"/>
+        <TextView
+            android:id="@+id/headerTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Welcome Back"
+            android:textSize="30sp"/>
+        <TextView
+            android:id="@+id/header2TV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="Login to Continue"/>
+
+    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailLayout"
@@ -60,11 +81,23 @@
         android:text="Login"
         android:textAllCaps="true"
         android:layout_margin="5dp"/>
-
-    <TextView
-        android:id="@+id/loginQn"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dont have an account? sign up"
-        android:gravity="center"/>
+        android:orientation="horizontal">
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dont have an account? "
+            android:gravity="center"/>
+        <TextView
+            android:id="@+id/loginQn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  sign up"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
 </LinearLayout>

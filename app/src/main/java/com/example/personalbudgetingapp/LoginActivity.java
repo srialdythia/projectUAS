@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
     private FirebaseAuth.AuthStateListener authStateListener;
+    private TextView headerTV, header2TV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,10 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.password);
         loginBtn = findViewById(R.id.loginBtn);
         loginQn = findViewById(R.id.loginQn);
+        headerTV = findViewById(R.id.headerTV);
+        header2TV = findViewById(R.id.header2TV);
+
+
 
         mAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);

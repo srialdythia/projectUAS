@@ -11,7 +11,7 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#000"
+        android:background="#FF8364"
         android:id="@+id/my_Feed_Toolbar"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -28,25 +28,25 @@
             android:id="@+id/logo"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:src="@drawable/applogo"
+            android:src="@drawable/money1"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Account Information"
-            android:textStyle="bold"
-            android:textColor="#000"
-            android:textSize="25sp"
             android:layout_marginTop="10dp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:text="Account Information"
+            android:textSize="25sp"
+            android:textStyle="bold" />
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="4dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
+            android:layout_marginBottom="10dp"
             android:background="#000" />
 
         <TextView
@@ -55,8 +55,6 @@
             android:layout_height="wrap_content"
             android:text="-"
             android:textSize="18sp"
-            android:textColor="#000"
-            android:textStyle="bold"
             android:gravity="center"
             android:layout_margin="10dp"
             android:textAllCaps="true" />

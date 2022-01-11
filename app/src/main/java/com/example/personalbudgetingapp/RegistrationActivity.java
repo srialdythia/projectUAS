@@ -39,6 +39,7 @@ public class RegistrationActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
 
+
         registerQn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {

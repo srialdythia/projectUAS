@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -175,8 +178,8 @@ public class BudgetActivity extends AppCompatActivity {
 
                         totalammount+=data.getAmount();
 
-                        String sttotal=String.valueOf("Month Budget: "+totalammount);
-                        totalBudgetAmountTv.setText(sttotal);
+                        String sttotal=String.valueOf(totalammount);
+                        totalBudgetAmountTv.setText("$"+sttotal);
 
                     }
                     int weeklyBudget = totalammount/4;
@@ -186,7 +189,7 @@ public class BudgetActivity extends AppCompatActivity {
                     personalRef.child("dailyBudget").setValue(dailyBudget);
 
                 }else {
-                    totalBudgetAmountTv.setText(String.valueOf("Month Budget: "+ totalammount));
+                    totalBudgetAmountTv.setText(String.valueOf("$"+totalammount));
                     personalRef.child("budget").setValue(0);
                     personalRef.child("weeklyBudget").setValue(0);
                     personalRef.child("dailyBudget").setValue(0);
@@ -211,45 +214,75 @@ public class BudgetActivity extends AppCompatActivity {
         FirebaseRecyclerAdapter<Data, MyViewHolder> adapter = new FirebaseRecyclerAdapter<Data, MyViewHolder>(options){
             @Override
             public void onBindViewHolder(@NonNull MyViewHolder holder, int position, @NonNull Data model) {
-                holder.setItemAmount("Allocated amount: $" + model.getAmount());
+                holder.setItemAmount("$" + model.getAmount());
+                Drawable backg;
+                Context mContext = getApplicationContext();
 
                 Log.d("modelDate", model.getDate().split("-")[0]);
                 String date = model.getDate().split("-")[1] + "/" + model.getDate().split("-")[2];
                 holder.setDate(date);
-                holder.setItemName("BudgetItem: " + model.getItem());
 
-                holder.notes.setVisibility(View.GONE);
 
                 switch (model.getItem()){
                     case "Transport":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_transport);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_transport);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Food":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_food);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_food);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "House":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_house);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_house);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Entertainment":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_entertainment);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_enter);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Education":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_education);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_education);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Charity":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_consultancy);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_charity);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Apparel":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_shirt);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_apparel);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Personal":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_personalcare);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_personal);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Other":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_other);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_other);
+                        holder.frameLayout.setBackground(backg);
                         break;
                     case "Health":
+                        holder.notes.setText(model.getItem());
                         holder.imageView.setImageResource(R.drawable.ic_health);
+                        backg = mContext.getResources().getDrawable(R.drawable.bg_health);
+                        holder.frameLayout.setBackground(backg);
                 }
 
                 holder.mView.setOnClickListener(new View.OnClickListener(){
@@ -368,6 +401,7 @@ public class BudgetActivity extends AppCompatActivity {
         View mView;
         public ImageView imageView;
         public TextView notes, date;
+        public FrameLayout frameLayout;
 
 
         public MyViewHolder(@NonNull View itemView){
@@ -376,6 +410,7 @@ public class BudgetActivity extends AppCompatActivity {
             imageView = itemView.findViewById(R.id.imageView);
             notes = itemView.findViewById(R.id.note);
             date = itemView.findViewById(R.id.date);
+            frameLayout = itemView.findViewById(R.id.frameLayout);
         }
 
         public void setItemName(String itemName){

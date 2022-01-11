@@ -75,7 +75,7 @@ public class TodaySpendingActivity extends AppCompatActivity implements DatePick
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Spending");
+        getSupportActionBar().setTitle("Today Spending");
 
         totalAmountSpentOn = findViewById(R.id.totalAmountSpentOn);
         progressBar = findViewById(R.id.progressBar);
@@ -140,8 +140,6 @@ public class TodaySpendingActivity extends AppCompatActivity implements DatePick
         Toast.makeText(getApplicationContext(),specificDateSelected.toString() , Toast.LENGTH_SHORT).show();
 
         readItems();
-
-
     }
 
     private void readItems(){

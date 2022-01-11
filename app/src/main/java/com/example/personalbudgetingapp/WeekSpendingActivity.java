@@ -197,7 +197,7 @@ public class WeekSpendingActivity extends AppCompatActivity {
                     int pTotal = Integer.parseInt(String.valueOf(total));
                     totalAmount += pTotal;
 
-                    totalWeekAmountTv.setText("Total Week's Spending: $" + totalAmount);
+                    totalWeekAmountTv.setText("Total Month's Spending: $" + totalAmount);
                 }
 
             }

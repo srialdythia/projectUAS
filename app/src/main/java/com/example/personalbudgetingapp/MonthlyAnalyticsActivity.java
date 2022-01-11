@@ -3,13 +3,18 @@ package com.example.personalbudgetingapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -36,6 +41,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Months;
 import org.joda.time.MutableDateTime;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,14 +64,24 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
 
     private AnyChartView anyChartView;
     private TextView progress_ratio_transport,progress_ratio_food,progress_ratio_house,progress_ratio_ent,progress_ratio_edu,progress_ratio_cha, progress_ratio_app,progress_ratio_hea,progress_ratio_per,progress_ratio_oth, monthRatioSpending;
-    private ImageView status_Image_transport, status_Image_food,status_Image_house,status_Image_ent,status_Image_edu,status_Image_cha,status_Image_app,status_Image_hea,status_Image_per,status_Image_oth, monthRatioSpending_Image;
+    private TextView status_Image_house,status_Image_ent,status_Image_edu,status_Image_cha,status_Image_app,status_Image_hea,status_Image_per,status_Image_oth;
+    private ImageView monthRatioSpending_Image;
+    private TextView status_Image_transport,status_Image_food;
     private Button btnSelectMonth;
     private ScrollView scrollView;
 
     private String ySelected, mSelected;
     private DateTime specificDateSelected;
+    private ProgressBar progressBarTrans, progressBarFood, progressBarEducation, progressBarCharity, progressBarApparel,
+            progressBarHouse, progressBarEnter, progressBarOther, progressBarPersonal, progressBarHealth;
+
+    private TextView saveTrans, saveFood, saveEducation, saveCharity, saveApparel, saveHouse, saveEnter, saveOther, savePersonal, saveHealth;
 
     private DatabaseReference budgetRef;
+    public String s;
+    double d;
+    int num;
+
     Pie pie;
 
     DecimalFormat df = new DecimalFormat("#.#");
@@ -86,11 +102,37 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
         personalRef = FirebaseDatabase.getInstance().getReference("personal").child(onlineUserId);
         budgetRef = FirebaseDatabase.getInstance().getReference().child("budget").child(onlineUserId);
 
+        progressBarTrans = findViewById(R.id.progressBarTrans);
+        progressBarFood = findViewById(R.id.progressBarFood);
+        progressBarEducation = findViewById(R.id.progressBarEducation);
+        progressBarCharity = findViewById(R.id.progressBarCharity);
+        progressBarApparel = findViewById(R.id.progressBarApparel);
+        progressBarHouse = findViewById(R.id.progressBarHouse);
+        progressBarEnter = findViewById(R.id.progressBarEnter);
+        progressBarOther = findViewById(R.id.progressBarOther);
+        progressBarPersonal = findViewById(R.id.progressBarPersonal);
+        progressBarHealth = findViewById(R.id.progressBarHealth);
+
+        saveTrans = findViewById(R.id.saveTrans);
+        saveFood = findViewById(R.id.saveFood);
+        saveEducation = findViewById(R.id.saveEducation);
+        saveCharity = findViewById(R.id.saveCharity);
+        saveEnter = findViewById(R.id.saveEnter);
+        saveApparel = findViewById(R.id.saveApparel);
+        saveHouse = findViewById(R.id.saveHouse);
+        saveOther = findViewById(R.id.saveOther);
+        savePersonal = findViewById(R.id.savePersonal);
+        saveHealth = findViewById(R.id.saveHealth);
+
+
 
         totalBudgetTextView = findViewById(R.id.totalBudgetTextView);
         totalSpendingTextView = findViewById(R.id.totalSpendingTextView);
 
         //general analytic
+
+
+
         monthSpentAmount = findViewById(R.id.monthSpentAmount);
         linearLayoutAnalysis = findViewById(R.id.linearLayoutAnalysis);
         monthRatioSpending = findViewById(R.id.monthRatioSpending);
@@ -248,10 +290,10 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                     personalRef.child("budget").setValue(totalAmount);
                     Log.d("totalBudget", String.valueOf(totalAmount));
 
-                    totalBudgetTextView.setText("Months's Budget: $ "+ totalAmount);
+                    totalBudgetTextView.setText("$"+ totalAmount);
                     anyChartView.setVisibility(View.VISIBLE);
                 } else{
-                    totalBudgetTextView.setText("Months's Budget: $ "+ 0);
+                    totalBudgetTextView.setText("$"+ 0);
                     anyChartView.setVisibility(View.GONE);
                 }
             }
@@ -676,14 +718,14 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
 
                     }
 
-                    rvSummary.setVisibility(View.VISIBLE);
-                    totalSpendingTextView.setText("Months's spending: $ "+ totalAmount);
+
+                    totalSpendingTextView.setText("$"+ totalAmount);
                     monthSpentAmount.setText("Total Spent: $ "+totalAmount);
                     anyChartView.setVisibility(View.VISIBLE);
                 }else {
-                    totalSpendingTextView.setText("Months's spending: $ "+ 0);
+                    totalSpendingTextView.setText("$"+ 0);
                     anyChartView.setVisibility(View.GONE);
-                    rvSummary.setVisibility(View.GONE);
+
                 }
             }
             @Override
@@ -1406,140 +1448,386 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
                     }
 
 
-                    float transportPercent = (traTotal/traRatio)*100;
-                    if (transportPercent<50){
-                        progress_ratio_transport.setText(df.format(transportPercent)+" %" +" used of $"+df.format(traRatio) + ". \nStatus:");
-                        status_Image_transport.setImageResource(R.drawable.green);
-                    }else if (transportPercent >= 50 && transportPercent <100){
-                        progress_ratio_transport.setText(df.format(transportPercent)+" %" +" used of $"+df.format(traRatio) + ". \nStatus:");
-                        status_Image_transport.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_transport.setText(df.format(transportPercent)+" %" +" used of $"+df.format(traRatio) + ". \nStatus:");
-                        status_Image_transport.setImageResource(R.drawable.red);
+                    //START TRANSPORT
+                    if(traRatio == 0){
+                        saveTrans.setText("-$"+String.valueOf("$0"));
+                        progressBarTrans.setProgress(Integer.parseInt("0"));
+                        status_Image_transport.setTextSize(12);
+                        status_Image_transport.setText("You've never set this item to your budget");
 
+                    }else{
+                        float transportPercent = (traTotal/traRatio)*100;
+                        status_Image_transport.setText(df.format(transportPercent)+"%");
+                        s = df.format(transportPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarTrans.setProgress(num);
+
+                        if (transportPercent<50){
+                            progressBarTrans.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (transportPercent >= 50 && transportPercent <100){
+                            progressBarTrans.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarTrans.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+
+                        float transportSave = traRatio - traTotal;
+                        if(transportSave > traTotal){
+                            saveTrans.setText("-$"+String.valueOf(transportSave));
+                            saveTrans.setTextColor(getResources().getColor(R.color.low));
+                        }else if(transportSave == traTotal){
+                            saveTrans.setText("$"+String.valueOf(transportSave));
+                        }else if(transportSave < traTotal) {
+                            saveTrans.setText("!$" + String.valueOf(transportSave));
+                            saveTrans.setTextColor(getResources().getColor(R.color.high));
+                        }
+                    }
+                    // END TRANSPORT
+
+                    // START FOOD
+                    if(foodRatio == 0){
+                        saveFood.setText("-$"+String.valueOf("$0"));
+                        progressBarFood.setProgress(Integer.parseInt("0"));
+                        status_Image_food.setTextSize(12);
+                        status_Image_food.setText("You've never set this item to your budget");
+                    }
+                    else{
+                        float foodPercent = (foodTotal/foodRatio)*100;
+                        status_Image_food.setText(df.format(foodPercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity",""+Integer.parseInt(df.format(foodPercent)));
+                        s = df.format(foodPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarFood.setProgress(num);
+
+                        if (foodPercent<50){
+                            progressBarFood.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (foodPercent >= 50 && foodPercent <100){
+                            progressBarFood.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarFood.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+
+                        float foodSave = foodRatio - foodTotal;
+                        if(foodSave > foodTotal){
+                            saveFood.setText("-$"+String.valueOf(foodSave));
+                            saveFood.setTextColor(getResources().getColor(R.color.low));
+                        }else if(foodSave == foodTotal){
+                            saveFood.setText("$"+String.valueOf(foodSave));
+                        }else if(foodSave < foodTotal){
+                            saveFood.setText("!$"+String.valueOf(foodSave));
+                            saveFood.setTextColor(getResources().getColor(R.color.high));
+                        }
+                    }
+                    // END FOOD
+
+
+                    // START HOUSE
+                    if(houseRatio == 0){
+                        saveHouse.setText("-$"+String.valueOf("0"));
+                        progressBarHouse.setProgress(Integer.parseInt("0"));
+                        status_Image_house.setTextSize(12);
+                        status_Image_house.setText("You've never set this item to your budget");
+
+                    }else{
+                        float housePercent = (houseTotal/houseRatio)*100;
+                        status_Image_house.setText(df.format(housePercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity",""+Integer.parseInt(df.format(housePercent)));
+                        s = df.format(housePercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarHouse.setProgress(num);
+
+                        if (housePercent<50){
+                            progressBarHouse.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (housePercent >= 50 && housePercent <100){
+                            progressBarHouse.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarHouse.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+
+                        float houseSave = houseRatio - houseTotal;
+                        if(houseSave > houseTotal){
+                            saveHouse.setText("-$"+String.valueOf(houseSave));
+                            saveHouse.setTextColor(getResources().getColor(R.color.low));
+                        }else if(houseSave == houseTotal){
+                            saveHouse.setText("$"+String.valueOf(houseSave));
+                        }else if(houseSave < houseTotal) {
+                            saveHouse.setText("!$" + String.valueOf(houseSave));
+                            saveHouse.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
 
-                    float foodPercent = (foodTotal/foodRatio)*100;
-                    if (foodPercent<50){
-                        progress_ratio_food.setText(df.format(foodPercent)+" %" +" used of $"+df.format(foodRatio) + ". \nStatus:");
-                        status_Image_food.setImageResource(R.drawable.green);
-                    }else if (foodPercent >= 50 && foodPercent <100){
-                        progress_ratio_food.setText(df.format(foodPercent)+" %" +" used of $"+df.format(foodRatio) + ". \nStatus:");
-                        status_Image_food.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_food.setText(df.format(foodPercent)+" %" +" used of $"+df.format(foodRatio) + ". \nStatus:");
-                        status_Image_food.setImageResource(R.drawable.red);
+                    // END HOUSE
 
+                    // START ENT
+                    if(entRatio == 0){
+                        saveEnter.setText("-$"+String.valueOf("$0"));
+                        progressBarEnter.setProgress(Integer.parseInt("0"));
+                        status_Image_ent.setTextSize(12);
+                        status_Image_ent.setText("You've never set this item to your budget");
+                    }else{
+                        float entPercent = (entTotal/entRatio)*100;
+                        status_Image_ent.setText(df.format(entPercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity",""+Integer.parseInt(df.format(entPercent)));
+                        s = df.format(entPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarEnter.setProgress(num);
+
+                        if (entPercent<50){
+                            progressBarEnter.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (entPercent >= 50 && entPercent <100){
+                            progressBarEnter.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarEnter.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+
+                        float entSave = entRatio - entTotal;
+                        if(entSave > entTotal){
+                            saveEnter.setText("-$"+String.valueOf(entSave));
+                            saveEnter.setTextColor(getResources().getColor(R.color.low));
+                        }else if(entSave == entTotal){
+                            saveEnter.setText("$"+String.valueOf(entSave));
+                        }else if(entSave < entTotal) {
+                            saveEnter.setText("!$" + String.valueOf(entSave));
+                            saveEnter.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
 
-                    float housePercent = (houseTotal/houseRatio)*100;
-                    if (housePercent<50){
-                        progress_ratio_house.setText(df.format(housePercent)+" %" +" used of $"+df.format(houseRatio) + ". \nStatus:");
-                        status_Image_house.setImageResource(R.drawable.green);
-                    }else if (housePercent >= 50 && housePercent <100){
-                        progress_ratio_house.setText(df.format(housePercent)+" %" +" used of "+df.format(houseRatio) + ". \nStatus:");
-                        status_Image_house.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_house.setText(df.format(housePercent)+" %" +" used of "+df.format(houseRatio) + ". \nStatus:");
-                        status_Image_house.setImageResource(R.drawable.red);
+                    // END ENT
 
+
+                    // START EDU
+                    if(eduRatio == 0){
+                        saveEducation.setText("-$"+String.valueOf("$0"));
+                        progressBarEducation.setProgress(Integer.parseInt("0"));
+                        status_Image_edu.setTextSize(12);
+                        status_Image_edu.setText("You've never set this item to your budget");
+                    }else{
+                        float eduPercent = (eduTotal/eduRatio)*100;
+                        status_Image_edu.setText(df.format(eduPercent)+"%");
+                        s = df.format(eduPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarEducation.setProgress(num);
+
+                        if (eduPercent<50){
+                            progressBarEducation.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (eduPercent >= 50 && eduPercent <100){
+                            progressBarEducation.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarEducation.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+                        float eduSave = eduRatio - eduTotal;
+
+                        if(eduSave > eduTotal){
+                            saveEducation.setText("-$"+String.valueOf(eduSave));
+                            saveEducation.setTextColor(getResources().getColor(R.color.low));
+                        }else if(eduSave == eduTotal){
+                            saveEducation.setText("$"+String.valueOf(eduSave));
+                        }else if(eduSave < eduTotal) {
+                            saveEducation.setText("!$" + String.valueOf(eduSave));
+                            saveEducation.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
 
-                    float entPercent = (entTotal/entRatio)*100;
-                    if (entPercent<50){
-                        progress_ratio_ent.setText(df.format(entPercent)+" %" +" used of $"+df.format(entRatio) + ". \nStatus:");
-                        status_Image_ent.setImageResource(R.drawable.green);
-                    }else if (entPercent >= 50 && entPercent <100){
-                        progress_ratio_ent.setText(df.format(entPercent)+" %" +" used of $"+df.format(entRatio) + ". \nStatus:");
-                        status_Image_ent.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_ent.setText(df.format(entPercent)+" %" +" used of $"+df.format(entRatio) + ". \nStatus:");
-                        status_Image_ent.setImageResource(R.drawable.red);
+                    // END EDU
 
+                    // START CHA
+                    if(chaRatio == 0){
+                        saveCharity.setText("-$"+String.valueOf("$0"));
+                        progressBarCharity.setProgress(Integer.parseInt("0"));
+                        status_Image_cha.setTextSize(12);
+                        status_Image_cha.setText("You've never set this item to your budget");
+
+                    }else{
+                        float chaPercent = (chaTotal/chaRatio)*100;
+                        status_Image_cha.setText(df.format(chaPercent)+"%");
+                        s = df.format(chaPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarCharity.setProgress(num);
+
+                        if (chaPercent<50){
+                            progressBarCharity.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (chaPercent >= 50 && chaPercent <100){
+                            progressBarCharity.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarCharity.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+                        float chaSave = chaRatio - chaTotal;
+
+                        if(chaSave > chaTotal){
+                            saveCharity.setText("-$"+String.valueOf(chaSave));
+                            saveCharity.setTextColor(getResources().getColor(R.color.low));
+                        }else if(chaSave == chaTotal){
+                            saveCharity.setText("$"+String.valueOf(chaSave));
+                        }else if(chaSave < chaTotal) {
+                            saveCharity.setText("!$" + String.valueOf(chaSave));
+                            saveCharity.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
 
-                    float eduPercent = (eduTotal/eduRatio)*100;
-                    if (eduPercent<50){
-                        progress_ratio_edu.setText(df.format(eduPercent)+" %" +" used of $"+df.format(eduRatio) + ". \nStatus:");
-                        status_Image_edu.setImageResource(R.drawable.green);
+                    // END CHA
+
+                    // START APP
+                    if(appRatio == 0){
+                        saveApparel.setText("-$"+String.valueOf("$0"));
+                        progressBarApparel.setProgress(Integer.parseInt("0"));
+                        status_Image_app.setTextSize(12);
+                        status_Image_app.setText("You've never set this item to your budget");
+
+                    }else{
+                        float appPercent = (appTotal/appRatio)*100;
+                        status_Image_app.setText(df.format(appPercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity",""+Integer.parseInt(df.format(appPercent)));
+                        s = df.format(appPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarApparel.setProgress(num);
+
+                        if (appPercent<50){
+                            progressBarApparel.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (appPercent >= 50 && appPercent <100){
+                            progressBarApparel.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarApparel.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+                        float appSave = appRatio - appTotal;
+
+                        if(appSave > appTotal){
+                            saveApparel.setText("-$"+String.valueOf(appSave));
+                            saveApparel.setTextColor(getResources().getColor(R.color.low));
+                        }else if(appSave == appTotal){
+                            saveApparel.setText("$"+String.valueOf(appSave));
+                        }else if(appSave < appTotal) {
+                            saveApparel.setText("!$" + String.valueOf(appSave));
+                            saveApparel.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
-                    else if (eduPercent >= 50 && eduPercent <100){
-                        progress_ratio_edu.setText(df.format(eduPercent)+" %" +" used of $"+df.format(eduRatio) + ". \nStatus:");
-                        status_Image_edu.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_edu.setText(df.format(eduPercent)+" %" +" used of $"+df.format(eduRatio) + ". \nStatus:");
-                        status_Image_edu.setImageResource(R.drawable.red);
+                    // END APP
 
+                    // START HEA
+                    if(heaRatio == 0){
+                        saveHealth.setText("-$"+String.valueOf("$0"));
+                        progressBarHealth.setProgress(Integer.parseInt("0"));
+                        status_Image_hea.setTextSize(12);
+                        status_Image_hea.setText("You've never set this item to your budget");
+                    }else{
+                        float heaPercent = (heaTotal/heaRatio)*100;
+                        status_Image_hea.setText(df.format(heaPercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity",""+Integer.parseInt(df.format(heaPercent)));
+                        s = df.format(heaPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarHealth.setProgress(num);
+
+                        if (heaPercent<50){
+                            progressBarHealth.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (heaPercent >= 50 && heaPercent <100){
+                            progressBarHealth.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarHealth.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+                        float heaSave = heaRatio - heaTotal;
+
+                        if(heaSave > heaTotal){
+                            saveHealth.setText("-$"+String.valueOf(heaSave));
+                            saveHealth.setTextColor(getResources().getColor(R.color.low));
+                        }else if(heaSave == heaTotal){
+                            saveHealth.setText("$"+String.valueOf(heaSave));
+                        }else if(heaSave < heaTotal) {
+                            saveHealth.setText("!$" + String.valueOf(heaSave));
+                            saveHealth.setTextColor(getResources().getColor(R.color.high));
+                        }
+                    }
+                    // END HEA
+
+                    // START PER
+                    if(perRatio == 0){
+                        savePersonal.setText("-$"+String.valueOf("$0"));
+                        progressBarPersonal.setProgress(Integer.parseInt("0"));
+                        status_Image_per.setTextSize(12);
+                        status_Image_per.setText("You've never set this item to your budget");
+                    }else{
+                        float perPercent = (perTotal/perRatio)*100;
+                        status_Image_per.setText(df.format(perPercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity",""+Integer.parseInt(df.format(perPercent)));
+                        s = df.format(perPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarPersonal.setProgress(num);
+
+                        if (perPercent<50){
+                            progressBarPersonal.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (perPercent >= 50 && perPercent <100){
+                            progressBarPersonal.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarPersonal.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+
+                        float perSave = perRatio - perTotal;
+                        if(perSave > perTotal){
+                            savePersonal.setText("-$"+String.valueOf(perSave));
+                            savePersonal.setTextColor(getResources().getColor(R.color.low));
+                        }else if(perSave == perTotal){
+                            savePersonal.setText("$"+String.valueOf(perSave));
+                        }else if(perPercent < perTotal) {
+                            savePersonal.setText("!$" + String.valueOf(perSave));
+                            savePersonal.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
 
-                    float chaPercent = (chaTotal/chaRatio)*100;
-                    if (chaPercent<50){
-                        progress_ratio_cha.setText(df.format(chaPercent)+" %" +" used of $"+df.format(chaRatio) + ". \nStatus:");
-                        status_Image_cha.setImageResource(R.drawable.green);
-                    }else if (chaPercent >= 50 && chaPercent <100){
-                        progress_ratio_cha.setText(df.format(chaPercent)+" %" +" used of $"+df.format(chaRatio) + ". \nStatus:");
-                        status_Image_cha.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_cha.setText(df.format(chaPercent)+" %" +" used of $"+df.format(chaRatio) + ". \nStatus:");
-                        status_Image_cha.setImageResource(R.drawable.red);
+                    // END PER
 
+                    // START OTHER
+                    if(othRatio == 0){
+                        saveOther.setText("-$"+String.valueOf("$0"));
+                        progressBarOther.setProgress(Integer.parseInt("0"));
+                        status_Image_oth.setTextSize(12);
+                        status_Image_oth.setText("You've never set this item to your budget");
+                    }else{
+                        float otherPercent = (othTotal/othRatio)*100;
+                        status_Image_oth.setText(df.format(otherPercent)+"%");
+                        Log.d("MonthlyAnalyticsActivity","Percent: "+Integer.parseInt(df.format(otherPercent)) + "Total: " + othTotal + " Ration: " + othRatio);
+                        s = df.format(otherPercent);
+                        d = Double.parseDouble(s);
+                        num = (int) d;
+                        progressBarOther.setProgress(num);
+
+                        if (otherPercent<50){
+                            progressBarOther.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.low), PorterDuff.Mode.SRC_IN );
+                        }
+                        else if (otherPercent >= 50 && otherPercent <100){
+                            progressBarOther.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.mid), PorterDuff.Mode.SRC_IN );
+                        }else {
+                            progressBarOther.getProgressDrawable().setColorFilter(ContextCompat.getColor(getApplicationContext(), R.color.high), PorterDuff.Mode.SRC_IN );
+                        }
+                        float otherSave = othRatio - othTotal;
+
+                        if(otherSave > othTotal){
+                            saveOther.setText("-$"+String.valueOf(otherSave));
+                            saveOther.setTextColor(getResources().getColor(R.color.low));
+                        }else if(otherSave == othTotal){
+                            saveOther.setText("$"+String.valueOf(otherSave));
+                        }else if(otherSave < othTotal) {
+                            saveOther.setText("!$" + String.valueOf(otherSave));
+                            saveOther.setTextColor(getResources().getColor(R.color.high));
+                        }
                     }
 
-                    float appPercent = (appTotal/appRatio)*100;
-                    if (appPercent<50){
-                        progress_ratio_app.setText(df.format(appPercent)+" %" +" used of $"+df.format(appRatio) + ". \nStatus:");
-                        status_Image_app.setImageResource(R.drawable.green);
-                    }else if (appPercent >= 50 && appPercent <100){
-                        progress_ratio_app.setText(df.format(appPercent)+" %" +" used of $"+df.format(appRatio) + ". \nStatus:");
-                        status_Image_app.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_app.setText(df.format(appPercent)+" %" +" used of $"+df.format(appRatio) + ". \nStatus:");
-                        status_Image_app.setImageResource(R.drawable.red);
+                    // END OTHER
 
-                    }
-
-                    float heaPercent = (heaTotal/heaRatio)*100;
-                    if (heaPercent<50){
-                        progress_ratio_hea.setText(df.format(heaPercent)+" %" +" used of $"+df.format(heaRatio) + ". \nStatus:");
-                        status_Image_hea.setImageResource(R.drawable.green);
-                    }
-                    else if (heaPercent >= 50 && heaPercent <100){
-                        progress_ratio_hea.setText(df.format(heaPercent)+" %" +" used of $"+df.format(heaRatio) + ". \nStatus:");
-                        status_Image_hea.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_hea.setText(df.format(heaPercent)+" %" +" used of $"+df.format(heaRatio) + ". \nStatus:");
-                        status_Image_hea.setImageResource(R.drawable.red);
-
-                    }
-
-
-                    float perPercent = (perTotal/perRatio)*100;
-                    if (perPercent<50){
-                        progress_ratio_per.setText(df.format(perPercent)+" %" +" used of $"+df.format(perRatio) + " . \nStatus:");
-                        status_Image_per.setImageResource(R.drawable.green);
-                    }else if (perPercent >= 50 && perPercent <100){
-                        progress_ratio_per.setText(df.format(perPercent)+" %" +" used of $"+df.format(perRatio) + " . \nStatus:");
-                        status_Image_per.setImageResource(R.drawable.brown);
-                    }
-                    else {
-                        progress_ratio_per.setText(df.format(perPercent)+" %" +" used of $"+df.format(perRatio) + " . \nStatus:");
-                        status_Image_per.setImageResource(R.drawable.red);
-                    }
-
-
-                    float otherPercent = (othTotal/othRatio)*100;
-                    if (otherPercent<50){
-                        progress_ratio_oth.setText(df.format(otherPercent)+" %" +" used of "+df.format(othRatio) + ". \nStatus:");
-                        status_Image_oth.setImageResource(R.drawable.green);
-                    }
-                    else if (otherPercent >= 50 && otherPercent <100){
-                        progress_ratio_oth.setText(df.format(otherPercent)+" %" +" used of "+df.format(othRatio) + ". \nStatus:");
-                        status_Image_oth.setImageResource(R.drawable.brown);
-                    }else {
-                        progress_ratio_oth.setText(df.format(otherPercent)+" %" +" used of "+df.format(othRatio) + ". \nStatus:");
-                        status_Image_oth.setImageResource(R.drawable.red);
-
-                    }
 
                 }
                 else {
@@ -1550,7 +1838,8 @@ public class MonthlyAnalyticsActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
-    }
+            };
+    });
 }
+}
+

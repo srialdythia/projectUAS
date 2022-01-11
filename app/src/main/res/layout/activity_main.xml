@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bgimage"
+    android:background="@drawable/bg_mainmenu"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000"
+        android:background="#FF8364"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -172,7 +172,8 @@
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:layout_margin="8dp"
-                android:background="#fff">
+                android:background="#fff"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -185,7 +186,7 @@
                         android:id="@+id/budgetBtnImageView"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/budget" />
+                        android:src="@drawable/budget_2" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -193,7 +194,7 @@
                         android:text="My Budget"
                         android:textAlignment="center"
                         android:textColor="#000"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -208,7 +209,8 @@
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:layout_margin="8dp"
-                android:background="#fff">
+                android:background="#fff"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -221,7 +223,7 @@
                         android:id="@+id/todayBtnImageView"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/today" />
+                        android:src="@drawable/calendar2" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -281,7 +283,8 @@
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:layout_margin="8dp"
-                android:background="#fff">
+                android:background="#fff"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -294,7 +297,7 @@
                         android:id="@+id/monthBtnImageView"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/month" />
+                        android:src="@drawable/calendar" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -317,7 +320,8 @@
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:layout_margin="8dp"
-                android:background="#fff">
+                android:background="#fff"
+                app:cardCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -330,7 +334,7 @@
                         android:id="@+id/analyticBtnImageView"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:src="@drawable/ic_analytics" />
+                        android:src="@drawable/analysis" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -344,7 +348,6 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:visibility="gone"
                 android:id="@+id/historyCardView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -354,7 +357,8 @@
                 android:layout_columnWeight="1"
                 android:layout_gravity="fill"
                 android:layout_margin="8dp"
-                android:background="#fff">
+                android:background="#fff"
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -390,8 +394,8 @@
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="5dp"
             android:src="@drawable/ic_add"
-            app:fabSize="normal"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            app:fabSize="normal" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
