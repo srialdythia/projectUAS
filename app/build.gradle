@@ -9,13 +9,13 @@ android {
     defaultConfig {
         applicationId "com.example.personalbudgetingapp"
         minSdkVersion 22
-        targetSdkVersion 30
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        targetSdkVersion 30
-        minSdkVersion 28
+        targetSdkVersion 24
+        minSdkVersion 22
     }
 
     buildTypes {

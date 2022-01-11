@@ -68,7 +68,7 @@ public class TodayItemAdapter extends RecyclerView.Adapter<TodayItemAdapter.View
         Log.d("TodayItemAdapter", String.valueOf(data.getItem()));
         holder.amount.setText("$" + data.getAmount());
         holder.date.setText("On " + data.getDate());
-        holder.notes.setText("Note: " + data.getNotes());
+        holder.notes.setText("" + data.getNotes());
 
         switch (data.getItem()){
             case "Transport":
